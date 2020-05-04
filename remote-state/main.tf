@@ -1,10 +1,7 @@
-provider "aws" {
-  region = "ap-northeast-1"
-  profile = "lukas"
-  assume_role {
-    role_arn     = "arn:aws:iam::537595194483:role/OrganizationAccountAccessRole"
-    session_name = "SESSION_NAME"
-    external_id  = "EXTERNAL_ID"
+terraform {
+  required_version = "= 0.12.24"
+  required_providers {
+    aws = "= 2.60.0"
   }
 }
 
