@@ -29,3 +29,13 @@ override.tf.json
 # example: *tfplan*
 
 .idea
+
+# ignore temporary site-packages for AWS Glue Python
+site-packages
+site-packages.zip
+
+# Mac OS
+.DS_Store
+
+# Python
+.python-version
