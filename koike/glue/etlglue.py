@@ -12,7 +12,7 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME',
                                      'glue_database',
                                      'glue_table_name'])
 
-gm = Gluemotion(text_col='text')
+gm = Gluemotion('text')
 
 sc = SparkContext()
 glueContext = GlueContext(sc)
@@ -27,12 +27,12 @@ table_name = args['glue_table_name']
 input_tweets = glueContext.create_dynamic_frame.from_catalog(database=database, table_name=table_name, transformation_ctx = "inputclicks")
 applymapping1 = ApplyMapping.apply(frame=input_tweets, mappings=[("text", "string", "text", "string")], transformation_ctx = "applymapping1")
 
-result_emotions = Map.apply(frame = applymapping1, f = gm.add_emotions)
+result_covid_check = Map.apply(frame = applymapping1, f=gm.add_covid_check)
 
-droppedcols = DropFields.apply(frame=result_emotions, paths=["text"], transformation_ctx="<transformation_ctx>")
+droppedcols = DropFields.apply(frame=result_covid_check, paths=["text"], transformation_ctx="<transformation_ctx>")
 
 # repartition(1) to create a single output-file
-df_result_agg = droppedcols.toDF().groupBy('emotion_representative').count()
+df_result_agg = droppedcols.toDF().groupBy('covid_mentioned').count()
 result_agg = DynamicFrame.fromDF(dataframe=df_result_agg, glue_ctx=glueContext, name="result_agg").repartition(1)
 result_agg.toDF().show(10)
 
