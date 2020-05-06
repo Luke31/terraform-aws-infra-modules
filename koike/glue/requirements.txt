@@ -1,1 +1,3 @@
-batmobile
+pymlask==0.2.3
+mecab-python3==0.996.5
+gluemotion==0.0.2a0

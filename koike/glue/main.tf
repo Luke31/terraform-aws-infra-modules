@@ -52,24 +52,18 @@ resource "null_resource" "glue_script_side_packages" {
   triggers = {
     requirements_file = filemd5("${path.module}/requirements.txt")
   }
-  provisioner "local-exec" {
-    command = "rm -f \"${path.module}/site-packages.zip\""
-  }
-  provisioner "local-exec" {
-    command = "pip install -i ${var.pip_index_url} -r \"${path.module}/requirements.txt\" --target=site-packages"
-  }
-  provisioner "local-exec" {
-    command = "zip -r -X \"${path.module}/site-packages.zip\" site-packages"
-  }
+  provisioner "local-exec" { command = "rm -f \"${path.module}/sides.zip\" && rm -rf sides" }
+  provisioner "local-exec" { command = "pip install -i ${var.pip_index_url} -r \"${path.module}/requirements.txt\" --target=sides" }
+  provisioner "local-exec" { command = "cd sides && zip -r -X sides.zip * && mv sides.zip .." }
 }
 
 # Glue script library in Amazon S3 for Glue job
-resource "aws_s3_bucket_object" "glue_script_libs" {
+resource "aws_s3_bucket_object" "glue_script_sides" {
   depends_on = [null_resource.glue_script_side_packages]
   bucket = var.input_bucket_id
-  key    = "glue/site-packages.zip"
-  source = "${path.module}/site-packages.zip"
-  # etag = filemd5("${path.module}/site-packages.zip")
+  key    = "glue/sides.zip"
+  source = "sides.zip"
+  etag = filemd5("${path.module}/requirements.txt")
 }
 
 resource "aws_glue_job" "glue_job" {
@@ -81,7 +75,7 @@ resource "aws_glue_job" "glue_job" {
   }
 
   default_arguments = {
-    "--extra-py-files": "s3://${var.input_bucket_id}/${aws_s3_bucket_object.glue_script_libs.key}"
+    "--extra-py-files" : "s3://${var.input_bucket_id}/${aws_s3_bucket_object.glue_script_sides.key}"
     "--target_bucket_folder": "s3://${var.target_bucket_id}/${var.target_bucket_output_folder}",
     "--glue_database": aws_glue_catalog_database.catalog_database.name,
     "--glue_table_name": replace(basename(var.input_file_key),".","_"),
