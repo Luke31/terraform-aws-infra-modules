@@ -5,7 +5,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
-import boto3
+from batmobile import Batmobile
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME',
                                      'target_bucket_folder',
@@ -19,6 +19,7 @@ def AddEmotions(rec):
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
+logger = glueContext.get_logger()
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 target_bucket_folder = args['target_bucket_folder']
@@ -34,6 +35,8 @@ result_emotions = Map.apply(frame = applymapping1, f = AddEmotions)
 # result_agg = DynamicFrame.fromDF(dataframe=df_result_agg, glue_ctx=glueContext, name="result_agg").repartition(1)
 
 # groupByEmotions, count
+bm = Batmobile("Glue")
+logger.info("Batmobile: " + bm.drive())
 
 datasinks3 = glueContext.write_dynamic_frame.from_options(frame = result_emotions, connection_type = "s3", connection_options = {"path": target_bucket_folder}, format = "csv", transformation_ctx = "datasinks3")
 job.commit()

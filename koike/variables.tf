@@ -7,3 +7,6 @@ variable "bucket_prefix" {
 variable "project_name" {
   description = "name of the project e.g. 'koike'"
 }
+variable "pip_index_url" {
+  description = "index-url to use for pip"
+}

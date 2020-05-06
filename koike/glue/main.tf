@@ -1,3 +1,5 @@
+# Try terragrunt before-hook to make site-packages.zip?
+
 # AWS Glue
 resource "aws_glue_catalog_database" "catalog_database" {
   name = "${var.project_name}-database"
@@ -51,7 +53,10 @@ resource "null_resource" "glue_script_side_packages" {
     requirements_file = filemd5("${path.module}/requirements.txt")
   }
   provisioner "local-exec" {
-    command = "pip install -r \"${path.module}/requirements.txt\" --target=site-packages"
+    command = "rm -f \"${path.module}/site-packages.zip\""
+  }
+  provisioner "local-exec" {
+    command = "pip install -i ${var.pip_index_url} -r \"${path.module}/requirements.txt\" --target=site-packages"
   }
   provisioner "local-exec" {
     command = "zip -r -X \"${path.module}/site-packages.zip\" site-packages"

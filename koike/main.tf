@@ -21,4 +21,5 @@ module "glue" {
   target_bucket_id = module.buckets.target_bucket_id
   csv_header = ["utc", "tweetid","user","text"]
   target_bucket_output_folder = "glue_output/tweets_emotion"
+  pip_index_url = var.pip_index_url
 }

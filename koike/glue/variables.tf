@@ -11,3 +11,6 @@ variable "target_bucket_id" {}
 variable "target_bucket_output_folder" {
   description = "output folder for processed result in target-bucket"
 }
+variable "pip_index_url" {
+  description = "index-url to use for pip"
+}
