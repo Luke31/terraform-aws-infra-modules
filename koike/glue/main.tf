@@ -72,10 +72,14 @@ resource "aws_glue_job" "glue_job" {
 
   command {
     script_location = "s3://${var.input_bucket_id}/${aws_s3_bucket_object.glue_script.key}"
+    python_version = "3"
   }
 
   default_arguments = {
-    "--extra-py-files" : "s3://${var.input_bucket_id}/${aws_s3_bucket_object.glue_script_sides.key}"
+    "--TempDir" : "s3://${var.input_bucket_id}/glue/tmp",
+    "--job-language" : "python",
+    "--job-bookmark-option"  = "job-bookmark-disable",
+    "--extra-py-files" : "s3://${var.input_bucket_id}/${aws_s3_bucket_object.glue_script_sides.key}",
     "--target_bucket_folder": "s3://${var.target_bucket_id}/${var.target_bucket_output_folder}",
     "--glue_database": aws_glue_catalog_database.catalog_database.name,
     "--glue_table_name": replace(basename(var.input_file_key),".","_"),

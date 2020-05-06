@@ -1,1 +1,1 @@
-gluemotion==0.0.3a0
+gluemotion==0.0.4a0
