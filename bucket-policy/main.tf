@@ -7,10 +7,10 @@ terraform {
 
 # Input bucket
 module "s3" {
-  source     = "./s3"
+  source     = "./s3/input_bucket"
   env = var.env
   bucket_prefix = "${var.bucket_prefix}-${var.env}-${var.project_name}"
-  put_role_unique_id = module.iam.batch_job_role_unique_id
+  roles = module.iam.roles
 }
 
 # Role
