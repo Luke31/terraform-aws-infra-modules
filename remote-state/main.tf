@@ -1,7 +1,10 @@
 terraform {
   required_version = "> 0.12.17"
   required_providers {
-    aws = "> 2.40.0"
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 3.20"
+    }
   }
 }
 
@@ -13,7 +16,7 @@ resource "aws_s3_bucket" "terraform_state" {
   lifecycle {
     prevent_destroy = true
   }
-  acl    = "private"
+  acl = "private"
 }
 
 resource "aws_dynamodb_table" "terraform_state_lock" {
